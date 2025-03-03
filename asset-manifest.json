@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/3D-GIS-Viewer/static/css/main.02d6b688.css",
+    "main.js": "/3D-GIS-Viewer/static/js/main.b78de08b.js",
+    "index.html": "/3D-GIS-Viewer/index.html",
+    "main.02d6b688.css.map": "/3D-GIS-Viewer/static/css/main.02d6b688.css.map",
+    "main.b78de08b.js.map": "/3D-GIS-Viewer/static/js/main.b78de08b.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.02d6b688.css",
+    "static/js/main.b78de08b.js"
+  ]
+}
