@@ -20,8 +20,8 @@ Ensure you have the following installed on your system:
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/your-username/your-repo.git
-   cd your-repo
+   git clone https://github.com/TahaKazi11/3D-GIS-Viewer.git
+   cd 3D-GIS-Viewer/3d-gis-viewer  
    
 2. Install dependencies:
    ```sh
