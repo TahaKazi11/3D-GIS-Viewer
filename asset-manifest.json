@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/3D-GIS-Viewer/static/css/main.02d6b688.css",
-    "main.js": "/3D-GIS-Viewer/static/js/main.b78de08b.js",
+    "main.css": "/3D-GIS-Viewer/static/css/main.84fef06b.css",
+    "main.js": "/3D-GIS-Viewer/static/js/main.2d9fe334.js",
     "index.html": "/3D-GIS-Viewer/index.html",
-    "main.02d6b688.css.map": "/3D-GIS-Viewer/static/css/main.02d6b688.css.map",
-    "main.b78de08b.js.map": "/3D-GIS-Viewer/static/js/main.b78de08b.js.map"
+    "main.84fef06b.css.map": "/3D-GIS-Viewer/static/css/main.84fef06b.css.map",
+    "main.2d9fe334.js.map": "/3D-GIS-Viewer/static/js/main.2d9fe334.js.map"
   },
   "entrypoints": [
-    "static/css/main.02d6b688.css",
-    "static/js/main.b78de08b.js"
+    "static/css/main.84fef06b.css",
+    "static/js/main.2d9fe334.js"
   ]
 }
