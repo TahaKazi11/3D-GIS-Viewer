@@ -24,22 +24,11 @@ Ensure you have the following installed on your system:
    cd your-repo
 
 Install dependencies:
-
-npm install
-or
-
-yarn install
+   ```sh
+   npm install
 
 Start the development server:
+   ```sh
+   npm start
 
-sh
-Copy
-Edit
-npm start
-or
-
-sh
-Copy
-Edit
-yarn start
 This will run the app in development mode. Open http://localhost:3000 to view it in your browser.
