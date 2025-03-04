@@ -42,9 +42,13 @@ View log details for uploaded files in the bottom panel.
 
 ## Technologies Used
 React.js: Frontend framework
+
 three.js: 3D rendering
+
 PCDLoader: For loading .pcd files
+
 Leaflet.js: For interactive maps
+
 OrbitControls: For point cloud navigation
 
 ## License
