@@ -22,12 +22,12 @@ Ensure you have the following installed on your system:
    ```sh
    git clone https://github.com/your-username/your-repo.git
    cd your-repo
-
-Install dependencies:
+   
+2. Install dependencies:
    ```sh
    npm install
 
-Start the development server:
+3. Start the development server:
    ```sh
    npm start
 
