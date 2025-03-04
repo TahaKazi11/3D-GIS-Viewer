@@ -39,6 +39,11 @@ const App = () => {
   const controlsRef = useRef(null);  // Store controls
   const mapRef = useRef(null);  // Reference to the map component
 
+  // New state to track if the current file supports time series
+  const [hasTimeSeriesSupport, setHasTimeSeriesSupport] = useState(false);
+  // New state to track if the current file has tags
+  const [hasTagsSupport, setHasTagsSupport] = useState(false);
+
   // Handle window resize for the renderer
   const handleResize = () => {
     if (cameraRef.current && rendererRef.current && mountRef.current) {
@@ -184,6 +189,12 @@ const App = () => {
       const reader = new FileReader();
       reader.onload = (e) => {
         const contents = e.target.result;
+        
+        // First, reset time series data when a new file is loaded
+        setTimeSeriesData(null);
+        setHasTimeSeriesSupport(false);
+        setHasTagsSupport(false);
+        
         if (file.name.endsWith(".pcd")) {
           loadPCD(contents, file);
         } else if (file.name.endsWith(".geojson")) {
@@ -192,6 +203,7 @@ const App = () => {
           loadXYZ(contents, file); // Added function for loading .xyz files
         } else if (file.name.endsWith(".json") && file.name.includes("timeseries")) {
           loadTimeSeriesData(contents, file); // Added function for loading time-series data
+          setHasTimeSeriesSupport(true);
         }
         setUploadedFiles([...uploadedFiles, file]);
       };
@@ -230,6 +242,9 @@ const App = () => {
         ...prevLog,
         `Uploaded PCD: ${file.name}, Size: ${file.size} bytes, Points: ${points.geometry.attributes.position.count}, Bounding Box: ${size.x} x ${size.y} x ${size.z}`,
       ]);
+      
+      // Switch to PCD tab
+      setActiveTab('pcd');
     }, undefined, (error) => {
       console.error("Error loading PCD file:", error);
     });
@@ -275,6 +290,9 @@ const App = () => {
       ...prevLog,
       `Uploaded XYZ: ${file.name}, Size: ${file.size} bytes, Points: ${points.length / 3}`,
     ]);
+    
+    // Switch to PCD tab
+    setActiveTab('pcd');
   };
 
   const fitCameraToObject = (object) => {
@@ -395,6 +413,9 @@ const App = () => {
       }
       
       setTags(Array.from(allTags));
+      setSelectedTags([]);  // Add this line
+      // Set hasTagsSupport if we found tags
+      setHasTagsSupport(allTags.size > 0);
       
       // Log event for uploaded GeoJSON file
       setLog((prevLog) => [
@@ -421,11 +442,30 @@ const App = () => {
       if (Array.isArray(data) && data.length > 0 && data[0].timestamp) {
         setTimeSeriesData(data);
         setCurrentTimeIndex(0);
+        setHasTimeSeriesSupport(true);
+        
+        // Check if this time-series data also has tags
+        let hasTags = false;
+        if (data[0].features) {
+          const allTags = new Set();
+          data[0].features.forEach(feature => {
+            if (feature.properties && feature.properties.tags) {
+              feature.properties.tags.forEach(tag => allTags.add(tag));
+            }
+          });
+          
+          if (allTags.size > 0) {
+            setTags(Array.from(allTags));
+            setSelectedTags([]);  // Add this line
+            setHasTagsSupport(true);
+            hasTags = true;
+          }
+        }
         
         // Log event for uploaded time-series file
         setLog((prevLog) => [
           ...prevLog,
-          `Uploaded Time-Series Data: ${file.name}, Size: ${file.size} bytes, Time Points: ${data.length}`,
+          `Uploaded Time-Series Data: ${file.name}, Size: ${file.size} bytes, Time Points: ${data.length}${hasTags ? ', Contains Tags' : ''}`,
         ]);
         
         // Apply the first time point data
@@ -457,10 +497,26 @@ const App = () => {
       updatePointCloudForTimePoint(timePoint);
     } else if (activeTab === 'geojson' && timePoint.features) {
       // Update GeoJSON features for the current time
-      setGeoJsonData({
+      const geoJsonContent = {
         type: "FeatureCollection",
         features: timePoint.features
-      });
+      };
+      setGeoJsonData(geoJsonContent);
+      
+      // Re-extract tags if they've changed with this time point
+      if (timePoint.features) {
+        const allTags = new Set();
+        timePoint.features.forEach(feature => {
+          if (feature.properties && feature.properties.tags) {
+            feature.properties.tags.forEach(tag => allTags.add(tag));
+          }
+        });
+        
+        if (allTags.size > 0) {
+          setTags(Array.from(allTags));
+          setHasTagsSupport(true);
+        }
+      }
     }
     
     // Log current timestamp
@@ -641,8 +697,16 @@ const App = () => {
     );
   };
 
+  // Modified: Show time-series controls based on current tab and data availability
   const renderTimeSeriesControls = () => {
-    if (!timeSeriesData || timeSeriesData.length === 0) return null;
+    // For GeoJSON tab, only show if time series data is available
+    if ((!timeSeriesData || !hasTimeSeriesSupport)) {
+      return null;
+    }
+    // Always hide time-series controls in PCD tab regardless of data
+    if (activeTab === 'pcd') {
+      return null;
+    }
     
     return (
       <div className="time-series-controls">
@@ -671,13 +735,13 @@ const App = () => {
           <input
             type="range"
             min="0"
-            max={timeSeriesData.length - 1}
+            max={timeSeriesData ? timeSeriesData.length - 1 : 0}
             value={currentTimeIndex}
             onChange={handleTimeSliderChange}
             className="time-slider"
           />
           <div className="time-label">
-            {timeSeriesData[currentTimeIndex]?.timestamp 
+            {timeSeriesData && timeSeriesData[currentTimeIndex]?.timestamp 
               ? new Date(timeSeriesData[currentTimeIndex].timestamp).toLocaleString() 
               : 'No timestamp'}
           </div>
@@ -686,11 +750,14 @@ const App = () => {
     );
   };
 
+  // Only render altitude filter for 3D data in PCD tab when point cloud exists
   const renderAltitudeFilter = () => {
-    if (activeTab !== 'pcd' || !pointCloud) return null;
+    if (activeTab !== 'pcd' || !pointCloud) {
+      return null;
+    }
     
     return (
-      <div className="filter-controls">
+            <div className="filter-controls">
         <h4>Altitude Filtering</h4>
         <div className="altitude-range">
           <div className="range-labels">
@@ -722,8 +789,11 @@ const App = () => {
     );
   };
 
+  // Only render tag filter for GeoJSON data in GeoJSON tab when tags exist
   const renderTagFilter = () => {
-    if (activeTab !== 'geojson' || !tags || tags.length === 0) return null;
+    if (activeTab !== 'geojson' || !tags || tags.length === 0) {
+      return null;
+    }
     
     return (
       <div className="filter-controls">
@@ -765,16 +835,16 @@ const App = () => {
           </div>
           <input type="file" accept=".pcd,.geojson,.xyz,.json" onChange={handleFileUpload} />
           
-          {/* Time series controls - displayed for both tabs when time series data is available */}
-          {renderTimeSeriesControls()}
+           {/* Time series controls - displayed for both tabs when time series data is available */}
+           {renderTimeSeriesControls()}
           
-          {/* Altitude filter for 3D data */}
-          {renderAltitudeFilter()}
+            {/* Altitude filter for 3D data */}
+            {renderAltitudeFilter()}
           
-          {/* Tag filter for GeoJSON data */}
-          {renderTagFilter()}
+            {/* Tag filter for GeoJSON data */}
+            {renderTagFilter()}
           
-          {uploadedFiles.length > 0 && (
+            {uploadedFiles.length > 0 && (
             <div className="uploaded-files">
               <h4>Uploaded Files:</h4>
               <ul>
@@ -803,3 +873,4 @@ const App = () => {
 };
 
 export default App;
+
