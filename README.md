@@ -2,7 +2,7 @@
 
 This application allows users to upload and visualize `.pcd`, `.xyz`, and `.geojson` files. It features a 3D point cloud viewer using `three.js` and a map viewer for GeoJSON data using `Leaflet.js`. 
 
-It has been deployed using `GitHub Pages` [here](https://tahakazi11.github.io/3D-GIS-Viewer/).
+It has been deployed using `GitHub Pages` and you can view it here [here](https://tahakazi11.github.io/3D-GIS-Viewer/).
 
 ## Features
 - Upload and visualize `.pcd` and `.xyz` point cloud files.
