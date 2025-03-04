@@ -32,3 +32,23 @@ Ensure you have the following installed on your system:
    npm start
 
 This will run the app in development mode. Open http://localhost:3000 to view it in your browser.
+
+## Usage
+
+Click Upload Files to upload .pcd, .xyz, or .geojson files.
+Use the tabs to switch between PCD Viewer and GeoJSON Map.
+Interact with the point cloud using mouse controls.
+View log details for uploaded files in the bottom panel.
+
+## Technologies Used
+React.js: Frontend framework
+three.js: 3D rendering
+PCDLoader: For loading .pcd files
+Leaflet.js: For interactive maps
+OrbitControls: For point cloud navigation
+
+## License
+This project is licensed under the MIT License.
+
+## Author
+Developed by Taha Kazi.
