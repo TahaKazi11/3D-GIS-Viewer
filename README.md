@@ -41,15 +41,11 @@ Interact with the point cloud using mouse controls.
 View log details for uploaded files in the bottom panel.
 
 ## Technologies Used
-React.js: Frontend framework
+**React.js**: Frontend framework
 
-three.js: 3D rendering
+**three.js**: 3D rendering
 
-PCDLoader: For loading .pcd files
-
-Leaflet.js: For interactive maps
-
-OrbitControls: For point cloud navigation
+**Leaflet.js**: For interactive maps
 
 ## License
 This project is licensed under the MIT License.
